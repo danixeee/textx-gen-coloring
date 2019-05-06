@@ -36,10 +36,10 @@ setup(
     install_requires=["jinja2", "textx"],
     entry_points={
         'textx_generators': [
-            'gen_textmate = textx_gen_coloring.generators:textmate'
+            'gen_textmate = textx_gen_coloring:textmate_gen'
         ],
         'textx_languages': [
-            'lang_coloring = textx_gen_coloring:coloring'
+            'lang_coloring = textx_gen_coloring:coloring_lang'
         ]
     },
     classifiers=[
