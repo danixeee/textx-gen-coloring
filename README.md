@@ -9,11 +9,11 @@ NOTE: Some parts of code are used from [textX-languageserver](https://github.com
 Generate a default syntax highlighting for _workflow_ language:
 
 ```bash
-textX generate --target textmate ./examples/workflow/workflow.tx
+textX generate --target textmate ./examples/workflow/workflow.tx --lang-name Workflow
 ```
 
 Generate a custom syntax highlighting for _workflow_ language:
 
 ```bash
-textX generate --target textmate ./examples/workflow/workflow.tx --cl ./examples/workflow/workflow.txcl
+textX generate --target textmate ./examples/workflow/workflow.tx --lang-name Workflow --cl ./examples/workflow/workflow.txcl
 ```

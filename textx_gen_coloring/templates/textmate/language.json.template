@@ -2,7 +2,6 @@
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "{{ name }}",
 	"scopeName": "source.{{ name }}",
-	"fileTypes": {{ extensions }},
 	"patterns": [
         {%- if comment.line != None or (comment.block_start != None and comment.block_end != None) %}
         {
@@ -31,8 +30,8 @@
             "patterns": [
                 {%- if comment.line != None %}
                 {
-                    "name": "comment.line",
-                    "match": "{{comment.line}}.*$"
+                    "match": "{{comment.line}}.*$",
+                    "name": "comment.line"
                 },
                 {%- endif %}
                 {%- if comment.block_start != None and comment.block_end != None %}
@@ -62,8 +61,8 @@
         "number": {
             "patterns": [
                 {
-                    "name": "constant.numeric",
-                    "match": "\\b[0-9]+\\b\\.{0,1}"
+                    "match": "\\b[0-9]+\\b\\.{0,1}",
+                    "name": "constant.numeric"
                 }
             ]
         },
@@ -71,8 +70,8 @@
             "patterns": [
                 {%- for keyword in keywords %}
                 {
-                    "name": "{{keyword.name}}",
-                    "match": "{{keyword.match}}"
+                    "match": "{{keyword.match}}",
+                    "name": "{{keyword.name}}"
                 }
                 {%- if loop.index != keywords|length -%}
                 ,
@@ -84,8 +83,8 @@
             "patterns": [
                 {%- for operation in operations %}
                 {
-                    "name": "{{operation.name}}",
-                    "match": "{{operation.match}}"
+                    "match": "{{operation.match}}",
+                    "name": "{{operation.name}}"
                 }
                 {%- if loop.index != operations|length -%}
                 ,
@@ -97,15 +96,15 @@
             "patterns": [
                 {%- for expression in regular_expressions %}
                 {
-                    "name": "{{expression.name}}",
                     "match": "({{expression.match}})",
+                    "name": "{{expression.name}}",
                     "captures": {
                         "1": {
                             "patterns": [
                                 {%- for operation in operations %}
                                 {
-                                    "name": "{{operation.name}}",
-                                    "match": "{{operation.match}}"
+                                    "match": "{{operation.match}}",
+                                    "name": "{{operation.name}}"
                                 }
                                 {%- if loop.index != operations|length -%}
                                 ,
