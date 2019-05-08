@@ -9,7 +9,9 @@ from textx import metamodel_from_file
 from .generators import LanguageData, get_textmate_generator
 from .metamodels import coloring_mm, textx_mm
 
+TEXTMATE_LANG_TARGET = ('textX', 'textmate')
 COLORING_LANG_NAME = 'txcl'
+
 
 coloring_lang = LanguageDesc(
     name=COLORING_LANG_NAME,
@@ -64,7 +66,7 @@ def generator(language, target):
     return decorator
 
 
-@generator('textX', 'textmate')
+@generator(*TEXTMATE_LANG_TARGET)
 def textmate_gen(lang_data, coloring_model, output_path='', overwrite=True, debug=False):  # noqa
     """Generating textmate syntax highlighting from textX grammars"""
     # TODO: Do not ignore `overwrite` and `debug` fields...
