@@ -25,6 +25,9 @@ def _parse_coloring_file(coloring_file):
 
 
 def _get_language_data(grammar_file, lang_name):
+    # Clear object processors
+    textx_mm.obj_processors = {}
+
     lang_data = LanguageData(lang_name)
 
     # Object processors
@@ -32,10 +35,9 @@ def _get_language_data(grammar_file, lang_name):
         """Get language keywords (all strings in language grammar definition"""
         lang_data.keywords.append(str_match.match)
 
-    if not textx_mm.obj_processors:
-        textx_mm.register_obj_processors({
-            'StrMatch': partial(_str_obj_processor, lang_data)
-        })
+    textx_mm.register_obj_processors({
+        'StrMatch': partial(_str_obj_processor, lang_data)
+    })
 
     # Parse file, but ignore returned model
     textx_mm.model_from_file(grammar_file)
