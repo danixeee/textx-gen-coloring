@@ -56,7 +56,11 @@ def generator(language, target):
                 raise Exception('Language name is required (--lang-name XYZ).')
 
             # Parse grammar with textX metamodel
-            grammar_file = args[1].file_name
+            grammar_file = None
+            if callable(args[1]):
+                grammar_file = args[1]().file_name
+            else:
+                grammar_file = args[1].file_name
             lang_data = _get_language_data(grammar_file, lang_name)
 
             # Parse coloring model if provided
