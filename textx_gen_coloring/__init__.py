@@ -2,6 +2,7 @@ from functools import partial, wraps
 from os.path import dirname, join
 
 import click
+
 from textx import LanguageDesc
 from textx import generator as _generator
 from textx import metamodel_from_file
@@ -67,7 +68,7 @@ def generator(language, target):
             cl_file = kwargs.get('cl')
             coloring_model = _parse_coloring_file(cl_file) if cl_file else None
 
-            f(lang_data, coloring_model, *args[2:])
+            return f(lang_data, coloring_model, *args[2:])
         return wrapper
     return decorator
 
