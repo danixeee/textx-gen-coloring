@@ -9,9 +9,13 @@
     "python.linting.flake8Enabled": false,
     "python.linting.pep8Enabled": false,
     "python.formatting.blackPath": "black",
+    "python.formatting.blackArgs": [
+        "--line-length",
+        "100"
+    ],
     "python.sortImports.args": [
         "-l",
-        "79"
+        "100"
     ],
     "python.formatting.provider": "black"
 }
