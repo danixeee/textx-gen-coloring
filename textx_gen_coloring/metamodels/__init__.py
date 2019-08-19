@@ -9,5 +9,5 @@ def _get_metamodel(file_name):
     return metamodel_from_file(join(mm_path, file_name))
 
 
-coloring_mm = _get_metamodel('coloring.tx')
-textx_mm = _get_metamodel('textx.tx')
+coloring_mm = _get_metamodel("coloring.tx")
+textx_mm = _get_metamodel("textx.tx")

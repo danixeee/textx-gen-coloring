@@ -1,89 +1,44 @@
-from functools import partial, wraps
-from os.path import dirname, join
+from functools import partial
+from os.path import dirname, exists, join
 
 import click
+from textx import LanguageDesc, generator, metamodel_from_file
 
-from textx import LanguageDesc
-from textx import generator as _generator
-from textx import metamodel_from_file
-
-from .generators import LanguageData, get_textmate_generator
-from .metamodels import coloring_mm, textx_mm
-
-TEXTMATE_LANG_TARGET = ('textX', 'textmate')
-COLORING_LANG_NAME = 'txcl'
-
+from .generators import generate_textmate_syntax
+from .metamodels import coloring_mm
 
 coloring_lang = LanguageDesc(
-    name=COLORING_LANG_NAME,
-    pattern='*.txcl',
-    description='A language for syntax highlight definition.',
-    metamodel=coloring_mm)
+    name="txcl",
+    pattern="*.txcl",
+    description="A language for syntax highlight definition.",
+    metamodel=coloring_mm,
+)
 
 
-def _parse_coloring_file(coloring_file):
-    return coloring_mm.model_from_file(coloring_file)
-
-
-def _get_language_data(grammar_file, lang_name):
-    # Clear object processors
-    textx_mm.obj_processors = {}
-
-    lang_data = LanguageData(lang_name)
-
-    # Object processors
-    def _str_obj_processor(lang_data, str_match):
-        """Get language keywords (all strings in language grammar definition"""
-        lang_data.keywords.append(str_match.match)
-
-    textx_mm.register_obj_processors({
-        'StrMatch': partial(_str_obj_processor, lang_data)
-    })
-
-    # Parse file, but ignore returned model
-    textx_mm.model_from_file(grammar_file)
-
-    return lang_data
-
-
-def generator(language, target):
-    def decorator(f):
-        @_generator(language, target)
-        @wraps(f)
-        def wrapper(*args, **kwargs):
-            # Get language name
-            lang_name = kwargs.get('lang-name')
-            if not lang_name:
-                raise Exception('Language name is required (--lang-name XYZ).')
-
-            # Parse grammar with textX metamodel
-            grammar_file = None
-            if callable(args[1]):
-                grammar_file = args[1]().file_name
-            else:
-                grammar_file = args[1].file_name
-            lang_data = _get_language_data(grammar_file, lang_name)
-
-            # Parse coloring model if provided
-            cl_file = kwargs.get('cl')
-            coloring_model = _parse_coloring_file(cl_file) if cl_file else None
-
-            return f(lang_data, coloring_model, *args[2:])
-        return wrapper
-    return decorator
-
-
-@generator(*TEXTMATE_LANG_TARGET)
-def textmate_gen(lang_data, coloring_model, output_path='', overwrite=True, debug=False):  # noqa
+@generator("textX", "textmate")
+def textmate_gen(
+    metamodel,
+    model,
+    output_path="",
+    overwrite=False,
+    debug=False,
+    name=None,
+    syntax_spec=None,
+):
     """Generating textmate syntax highlighting from textX grammars"""
-    # TODO: Do not ignore `overwrite` and `debug` fields...
+    # Check arguments
+    if name is None:
+        click.echo('\nError: Missing argument: "name".')
+        return
 
-    generator = get_textmate_generator(lang_data, coloring_model)
-    textmate_json = generator.generate()
+    textmate_json = generate_textmate_syntax(model, name, syntax_spec)
 
-    if not output_path:
+    if output_path:
+        if overwrite is False and exists(output_path):
+            raise Exception("File already exists.")
+
+        with open(output_path, "w") as f:
+            f.write(textmate_json)
+
+    else:
         click.echo(textmate_json)
-        return textmate_json
-
-    with open(output_path, 'w') as f:
-        f.write(textmate_json)
