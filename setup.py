@@ -1,6 +1,7 @@
 # flake8: noqa
 import codecs
 import os
+from platform import python_version
 
 from setuptools import find_packages, setup
 
@@ -21,10 +22,16 @@ README = codecs.open(
     os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8"
 ).read()
 
+ci_require = ["bandit", "pytest", "pytest-cov", "pytest-azurepipelines"]
 
-dev_require = ["bandit==1.5.1", "black"]
+dev_require = ["bandit==1.5.1"]
 
 tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
+
+if python_version().startswith("3.6"):  # For python 3.6
+    ci_require.append("black")
+    dev_require.append("black")
+
 
 setup(
     name=PACKAGE_NAME,
@@ -44,7 +51,7 @@ setup(
         "textx_generators": ["textmate_gen = textx_gen_coloring:textmate_gen"],
         "textx_languages": ["coloring_lang = textx_gen_coloring:coloring_lang"],
     },
-    extras_require={"dev": dev_require, "test": tests_require},
+    extras_require={"ci": ci_require, "dev": dev_require, "test": tests_require},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

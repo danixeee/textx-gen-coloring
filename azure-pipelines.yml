@@ -1,0 +1,39 @@
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+strategy:
+  matrix:
+    Python35:
+      python.version: '3.5'
+    Python36:
+      python.version: '3.6'
+    Python37:
+      python.version: '3.7'
+
+steps:
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '$(python.version)'
+  displayName: 'Use Python $(python.version)'
+
+- script: |
+    python -m pip install --upgrade pip
+    pip install .
+    pip install .[ci]
+  displayName: 'Install dependencies'
+
+- script: |
+    black --check textx_gen_coloring
+    black --check tests
+  displayName: 'black'
+  condition: eq(variables['python.version'], '3.6')
+
+- script: |
+    bandit -r textx_gen_coloring
+  displayName: 'bandit'
+
+- script: |
+    pytest tests/ --cov textx_gen_coloring --cov-report html
+  displayName: 'pytest and coverage'
