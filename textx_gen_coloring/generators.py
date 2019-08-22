@@ -1,5 +1,4 @@
 import re
-from collections.abc import ABC
 from functools import partial
 
 from .metamodels import coloring_mm, textx_mm
@@ -16,7 +15,7 @@ class GrammarInfo:
         self.keywords = []
 
 
-class _TextmateGen(ABC):
+class _TextmateGen:
     """
     Abstract textmate generator.
     """
