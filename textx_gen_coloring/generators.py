@@ -1,5 +1,5 @@
 import re
-from abc import ABC, abstractmethod
+from collections.abc import ABC
 from functools import partial
 
 from .metamodels import coloring_mm, textx_mm
