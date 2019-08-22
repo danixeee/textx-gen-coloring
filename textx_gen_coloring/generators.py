@@ -26,16 +26,16 @@ class _TextmateGen(ABC):
     def __init__(self, grammar_info):
         self.grammar_info = grammar_info
 
-    def _get_comment(self):
+    def _get_comment(self):  # pragma: no cover
         return {}
 
-    def _get_keywords(self):
+    def _get_keywords(self):  # pragma: no cover
         return []
 
-    def _get_operations(self):
+    def _get_operations(self):  # pragma: no cover
         return []
 
-    def _get_regular_expressions(self):
+    def _get_regular_expressions(self):  # pragma: no cover
         return []
 
     def generate(self):

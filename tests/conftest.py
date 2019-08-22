@@ -7,7 +7,9 @@ DATA_PATH = Path(__file__).parent.resolve() / "data"
 TEST_DATA = {
     "Robot": {
         "name": "Robot",
-        "keywords": set(["begin", "end", "initial", "up", "down", "left", "right", ","]),
+        "keywords": set(
+            ["begin", "end", "initial", "up", "down", "left", "right", ","]
+        ),
         "grammar_path": str(DATA_PATH / "robot.tx"),
     }
 }
@@ -21,3 +23,8 @@ def pytest_generate_tests(metafunc):
 @pytest.fixture
 def lang(request):
     return TEST_DATA.get(request.param)
+
+
+@pytest.fixture
+def coloring_model_path():
+    return str(DATA_PATH / "coloring.txcl")

@@ -35,7 +35,8 @@ def textmate_gen(
 
     if output_path:
         if overwrite is False and exists(output_path):
-            raise Exception("File already exists.")
+            click.echo("\nError: File already exists at {}.".format(output_path))
+            return
 
         with open(output_path, "w") as f:
             f.write(textmate_json)
