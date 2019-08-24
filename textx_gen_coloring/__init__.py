@@ -28,7 +28,7 @@ def textmate_gen(
     """Generating textmate syntax highlighting from textX grammars"""
     # Check arguments
     if name is None:
-        click.echo('\nError: Missing argument: "name".')
+        click.echo('\nError: Missing option: "--name".')
         return
 
     textmate_json = generate_textmate_syntax(model, name, syntax_spec)

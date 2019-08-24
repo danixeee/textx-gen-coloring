@@ -1,4 +1,3 @@
-# flake8: noqa
 import codecs
 import os
 from platform import python_version
