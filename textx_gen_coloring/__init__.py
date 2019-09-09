@@ -1,3 +1,4 @@
+import sys
 from functools import partial
 from os.path import dirname, exists, join
 
@@ -29,14 +30,14 @@ def textmate_gen(
     # Check arguments
     if name is None:
         click.echo('\nError: Missing option: "--name".')
-        return
+        sys.exit(1)
 
     textmate_json = generate_textmate_syntax(model, name, syntax_spec)
 
     if output_path:
         if overwrite is False and exists(output_path):
             click.echo("\nError: File already exists at {}.".format(output_path))
-            return
+            sys.exit(1)
 
         with open(output_path, "w") as f:
             f.write(textmate_json)

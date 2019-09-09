@@ -6,7 +6,7 @@ from click.testing import CliRunner
 from textx.cli import textx
 
 
-def _textmate_gen_cli(grammar_path, keywords, **kwargs):
+def _textmate_gen_cli(grammar_path, **kwargs):
     """Helper function to call the generator.
     kwargs is a dict in format flag: value
     - if flag is passed with one underscore, it will be converted to dash
@@ -36,7 +36,7 @@ def test_textmate_gen_cli_console(lang):
     keywords = lang["keywords"]
     grammar_path = lang["grammar_path"]
 
-    output, _ = _textmate_gen_cli(grammar_path, keywords, name=name)
+    output, _ = _textmate_gen_cli(grammar_path, name=name)
     for kw in keywords:
         assert kw in output
 
@@ -52,8 +52,9 @@ def test_textmate_gen_cli_console_bad_args(lang):
     keywords = lang["keywords"]
     grammar_path = lang["grammar_path"]
 
-    output, _ = _textmate_gen_cli(grammar_path, keywords)
-    assert 'Error: Missing argument: "name".' in output
+    output, err = _textmate_gen_cli(grammar_path)
+    assert 'Error: Missing option: "--name".' in output
+    assert err.code != 0
 
 
 def test_textmate_gen_cli_file(lang, tmpdir):
@@ -70,7 +71,7 @@ def test_textmate_gen_cli_file(lang, tmpdir):
     keywords = lang["keywords"]
     grammar_path = lang["grammar_path"]
 
-    _textmate_gen_cli(grammar_path, keywords, name=name, output_path=str(tmp_file))
+    _textmate_gen_cli(grammar_path, name=name, output_path=str(tmp_file))
 
     textmate_json = json.load(tmp_file)
 
@@ -92,13 +93,10 @@ def test_textmate_gen_cli_file_already_exists(lang, tmpdir):
     keywords = lang["keywords"]
     grammar_path = lang["grammar_path"]
 
-    output, _ = _textmate_gen_cli(
-        grammar_path, keywords, name=name, output_path=str(tmp_file)
-    )
-    output, _ = _textmate_gen_cli(
-        grammar_path, keywords, name=name, output_path=str(tmp_file)
-    )
+    output, _ = _textmate_gen_cli(grammar_path, name=name, output_path=str(tmp_file))
+    output, err = _textmate_gen_cli(grammar_path, name=name, output_path=str(tmp_file))
     assert "Error: File already exists" in output
+    assert err.code != 0
 
 
 def test_textmate_gen_cli_console_with_coloring(lang, coloring_model_path):
@@ -114,6 +112,6 @@ def test_textmate_gen_cli_console_with_coloring(lang, coloring_model_path):
     grammar_path = lang["grammar_path"]
 
     _, exc = _textmate_gen_cli(
-        grammar_path, keywords, name=name, syntax__spec=coloring_model_path
+        grammar_path, name=name, syntax__spec=coloring_model_path
     )
     assert isinstance(exc, NotImplementedError)
