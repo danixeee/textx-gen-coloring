@@ -25,6 +25,7 @@ def textmate_gen(
     debug=False,
     name=None,
     syntax_spec=None,
+    silent=False,
 ):
     """Generating textmate syntax highlighting from textX grammars"""
     # Check arguments
@@ -43,4 +44,7 @@ def textmate_gen(
             f.write(textmate_json)
 
     else:
-        click.echo(textmate_json)
+        if not silent:
+            click.echo(textmate_json)
+
+        return textmate_json
