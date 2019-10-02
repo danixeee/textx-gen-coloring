@@ -81,7 +81,7 @@ def _parse_syntax_spec(syntax_spec):
     return coloring_mm.model_from_file(syntax_spec)
 
 
-def _parse_grammar(grammar_file, lang_name):
+def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     """
     Collects information about grammar using textX object processors. Currently
     collects only `StrMatch` rules, since those are language keywords.
@@ -94,16 +94,17 @@ def _parse_grammar(grammar_file, lang_name):
         """Get language keywords (all strings in language grammar definition"""
         grammar_info.keywords.append(str_match.match)
 
-    textx_mm.register_obj_processors(
-        {"StrMatch": partial(_str_obj_processor, grammar_info)}
-    )
+    proccessors = {}
+    if not skip_keywords:
+        proccessors["StrMatch"] = partial(_str_obj_processor, grammar_info)
 
+    textx_mm.register_obj_processors(proccessors)
     textx_mm.model_from_file(grammar_file)
 
     return grammar_info
 
 
-def generate_textmate_syntax(model, lang_name, syntax_spec=None):
+def generate_textmate_syntax(model, lang_name, syntax_spec=None, skip_keywords=False):
     """
     Gets textmate generator depending on provided arguments.
     If syntax specification file is not provided, default generator is used
@@ -112,7 +113,7 @@ def generate_textmate_syntax(model, lang_name, syntax_spec=None):
     grammar_file = model().file_name if callable(model) else model.file_name
     syntax_model = _parse_syntax_spec(syntax_spec) if syntax_spec else None
 
-    grammar_info = _parse_grammar(grammar_file, lang_name)
+    grammar_info = _parse_grammar(grammar_file, lang_name, skip_keywords)
 
     if syntax_model:
         raise NotImplementedError("Not supported yet!")

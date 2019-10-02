@@ -5,7 +5,7 @@ from platform import python_version
 from setuptools import find_packages, setup
 
 PACKAGE_NAME = "textx-gen-coloring"
-VERSION = "0.1.0"
+VERSION = "0.1.1"
 AUTHOR = "Daniel Elero"
 AUTHOR_EMAIL = "danixeee@gmail.com"
 DESCRIPTION = "a syntax highlight generator for textX languages"

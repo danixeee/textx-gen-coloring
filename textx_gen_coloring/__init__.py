@@ -25,6 +25,8 @@ def textmate_gen(
     debug=False,
     name=None,
     syntax_spec=None,
+    skip_keywords=False,
+    silent=False,
 ):
     """Generating textmate syntax highlighting from textX grammars"""
     # Check arguments
@@ -32,7 +34,7 @@ def textmate_gen(
         click.echo('\nError: Missing option: "--name".')
         sys.exit(1)
 
-    textmate_json = generate_textmate_syntax(model, name, syntax_spec)
+    textmate_json = generate_textmate_syntax(model, name, syntax_spec, skip_keywords)
 
     if output_path:
         if overwrite is False and exists(output_path):
@@ -43,4 +45,7 @@ def textmate_gen(
             f.write(textmate_json)
 
     else:
-        click.echo(textmate_json)
+        if not silent:
+            click.echo(textmate_json)
+
+        return textmate_json
