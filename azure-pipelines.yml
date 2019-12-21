@@ -1,4 +1,9 @@
 trigger:
+  branches:
+    include:
+    - '*'
+
+pr:
 - master
 
 pool:
