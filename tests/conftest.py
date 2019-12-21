@@ -8,7 +8,7 @@ TEST_DATA = {
     "Robot": {
         "name": "Robot",
         "keywords": set(
-            ["begin", "end", "initial", "up", "down", "left", "right", ","]
+            ["begin", "end", "initial", "up", "down", "left", "right", "\\,"]
         ),
         "grammar_path": str(DATA_PATH / "robot.tx"),
     }
