@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning][semver].
 
 ## [Unreleased]
 
+### Fixed
+
+- Escape non-ascii characters when generating textmate syntax highlighting ([#3])
+
+[#3]: https://github.com/danixeee/textx-gen-coloring/pull/3
+
 ## [0.1.1] - 10/03/2019
 
 ### Added
