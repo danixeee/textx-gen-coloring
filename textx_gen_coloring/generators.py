@@ -1,8 +1,11 @@
 import re
+import string
 from functools import partial
 
 from .metamodels import coloring_mm, textx_mm
 from .templates import jinja_env, textmate_template_dir
+
+ASCII_LETTERS = string.ascii_letters
 
 
 class GrammarInfo:
@@ -78,11 +81,15 @@ class _TextmateDefaultGen(_TextmateGen):
 
 def _escape_keyword(keyword):
     """
-    Prepend `\\\\` to special keywords.
+    Prepend `\\\\` to all chars that are not ascii letters.
+    NOTE: `re.escape` does not work the same for 3.6 and 3.7 versions.
     """
-    if keyword == re.escape(keyword):
-        return keyword
-    return f"\\\\{keyword}"
+    return "".join(
+        [
+            letter if letter in ASCII_LETTERS else "\\\\{}".format(letter)
+            for letter in keyword
+        ]
+    )
 
 
 def _get_textx_rule_name(parent_rule):
