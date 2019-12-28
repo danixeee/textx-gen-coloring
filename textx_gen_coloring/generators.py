@@ -1,8 +1,11 @@
 import re
+import string
 from functools import partial
 
 from .metamodels import coloring_mm, textx_mm
 from .templates import jinja_env, textmate_template_dir
+
+ASCII_LETTERS = string.ascii_letters
 
 
 class GrammarInfo:
@@ -13,6 +16,8 @@ class GrammarInfo:
     def __init__(self, name):
         self.name = name
         self.keywords = []
+        self.regexes = []
+        self.comments = []
 
 
 class _TextmateGen:
@@ -74,6 +79,28 @@ class _TextmateDefaultGen(_TextmateGen):
         ]
 
 
+def _escape_keyword(keyword):
+    """
+    Prepend `\\\\` to all chars that are not ascii letters.
+    NOTE: `re.escape` does not work the same for 3.6 and 3.7 versions.
+    """
+    return "".join(
+        [
+            letter if letter in ASCII_LETTERS else "\\\\{}".format(letter)
+            for letter in keyword
+        ]
+    )
+
+
+def _get_textx_rule_name(parent_rule):
+    """
+    Iterate parent instances until `TextxRule` instance.
+    """
+    while not type(parent_rule).__name__ == "TextxRule":
+        parent_rule = parent_rule.parent
+    return parent_rule.name
+
+
 def _parse_syntax_spec(syntax_spec):
     """
     Parse syntax specification with coloring metamodel.
@@ -89,14 +116,24 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     textx_mm.obj_processors = {}
     grammar_info = GrammarInfo(lang_name)
 
-    # Object processors
     def _str_obj_processor(grammar_info, str_match):
-        """Get language keywords (all strings in language grammar definition"""
-        grammar_info.keywords.append(str_match.match)
+        """Get language keywords (all strings in language grammar definition)"""
+        keyword = _escape_keyword(str_match.match)
+
+        if keyword not in grammar_info.keywords:
+            grammar_info.keywords.append(keyword)
+
+    def _regex_obj_processor(grammar_info, reg_match):
+        """Get language regular expressions"""
+        if _get_textx_rule_name(reg_match.parent) == "Comment":
+            grammar_info.comments.append(reg_match.match)
+        else:
+            grammar_info.regexes.append(reg_match.match)
 
     proccessors = {}
     if not skip_keywords:
         proccessors["StrMatch"] = partial(_str_obj_processor, grammar_info)
+        proccessors["ReMatch"] = partial(_regex_obj_processor, grammar_info)
 
     textx_mm.register_obj_processors(proccessors)
     textx_mm.model_from_file(grammar_file)

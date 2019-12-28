@@ -21,11 +21,16 @@ README = codecs.open(
     os.path.join(os.path.dirname(__file__), "README.md"), "r", encoding="utf-8"
 ).read()
 
-ci_require = ["bandit", "pytest", "pytest-cov", "pytest-azurepipelines"]
+ci_require = [
+    "bandit==1.6.2",
+    "pytest==5.3.2",
+    "pytest-cov==2.8.1",
+    "pytest-azurepipelines==0.8.0",
+]
 
-dev_require = ["bandit==1.5.1"]
+dev_require = ["bandit==1.6.2"]
 
-tests_require = ["coverage==4.5.3", "pytest==4.3.1", "pytest-cov==2.6.1"]
+tests_require = ["coverage==5.0.1", "pytest==5.3.2", "pytest-cov==2.8.1"]
 
 if python_version().startswith("3.6"):  # For python 3.6
     ci_require.append("black")

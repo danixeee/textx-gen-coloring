@@ -22,7 +22,18 @@ def _textmate_gen_cli(grammar_path, **kwargs):
     runner = CliRunner()
     result = runner.invoke(textx, cmd)
 
-    return result.stdout, result.exception
+    try:
+        return json.loads(result.stdout.split("\n", 2)[2]), result.exception
+    except json.JSONDecodeError:
+        return result.stdout, result.exception
+
+
+def _get_keywords_from_textmate(textmate):
+    """Return keywords from textmate object.
+    """
+    return [
+        kw["match"] for kw in textmate["repository"]["language_keyword"]["patterns"]
+    ]
 
 
 def test_textmate_gen_cli_console(lang):
@@ -37,8 +48,9 @@ def test_textmate_gen_cli_console(lang):
     grammar_path = lang["grammar_path"]
 
     output, _ = _textmate_gen_cli(grammar_path, name=name)
+    output_kws = _get_keywords_from_textmate(output)
     for kw in keywords:
-        assert kw in output
+        assert kw in output_kws
 
 
 def test_textmate_gen_cli_console_bad_args(lang):
@@ -78,10 +90,9 @@ def test_textmate_gen_cli_file(lang, tmpdir):
     assert textmate_json["name"] == name
     assert textmate_json["scopeName"] == "source." + name
 
-    kw_patterns = textmate_json["repository"]["language_keyword"]["patterns"]
-    kw_pattern_matches = set(map(lambda x: x["match"], kw_patterns))
+    kw_patterns = _get_keywords_from_textmate(textmate_json)
 
-    assert keywords == kw_pattern_matches
+    assert set(keywords) == set(kw_patterns)
 
 
 def test_textmate_gen_cli_file_already_exists(lang, tmpdir):
