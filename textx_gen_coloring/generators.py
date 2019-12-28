@@ -117,14 +117,14 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     grammar_info = GrammarInfo(lang_name)
 
     def _str_obj_processor(grammar_info, str_match):
-        """Get language keywords (all strings in language grammar definition"""
+        """Get language keywords (all strings in language grammar definition)"""
         keyword = _escape_keyword(str_match.match)
 
         if keyword not in grammar_info.keywords:
             grammar_info.keywords.append(keyword)
 
     def _regex_obj_processor(grammar_info, reg_match):
-        """Get language keywords (all strings in language grammar definition"""
+        """Get language regular expressions"""
         if _get_textx_rule_name(reg_match.parent) == "Comment":
             grammar_info.comments.append(reg_match.match)
         else:
