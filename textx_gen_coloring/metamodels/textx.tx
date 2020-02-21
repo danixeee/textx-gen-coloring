@@ -1,14 +1,30 @@
 TextxModel:
-    imports*=ImportStm
+    import_or_reference*=ImportOrReferenceStm
     rules*=TextxRule
+;
+
+ImportOrReferenceStm:
+    ImportStm | ReferenceStm
 ;
 
 ImportStm:
     'import' grammar_to_import=GrammarToImport
 ;
 
+ReferenceStm:
+    'reference' language_name=LanguageName (language_alias=LanguageAlias)?
+;
+
 GrammarToImport:
     /(\w|\.)+/
+;
+
+LanguageName:
+    /(\w|-)+/
+;
+
+LanguageAlias:
+    'as' ID
 ;
 
 // Rules
@@ -56,10 +72,10 @@ BracketedChoice:
 ;
 
 RepeatOperator:
-    character=Character ('[' modifiers=RepeatModifiers ']')?
+    op_sign=OperatorSign ('[' modifiers=RepeatModifiers ']')?
 ;
 
-Character:
+OperatorSign:
 	"*" | "?" | "+" | "#"
 ;
 
@@ -114,7 +130,6 @@ ObjRef:
     '[' name=ClassName ('|' obj_ref_rule=ObjRefRule)? ']'
 ;
 
-
 RuleName:
     Ident
 ;
@@ -124,7 +139,7 @@ ObjRefRule:
 ;
 
 ClassName:
-    Ident
+    QualifiedIdent
 ;
 
 
@@ -134,13 +149,16 @@ StrMatch:
     ('"' match=/((\\")|[^"])*/ '"')
 ;
 
-
 ReMatch:
     '/' match=/((\\/)|[^\/])*/ '/'
 ;
 
 Ident:
     /\w+/
+;
+
+QualifiedIdent:
+    /\w+(\.\w+)?/
 ;
 
 Integer:
