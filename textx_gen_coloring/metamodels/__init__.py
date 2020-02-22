@@ -10,4 +10,3 @@ def _get_metamodel(file_name):
 
 
 coloring_mm = _get_metamodel("coloring.tx")
-textx_mm = _get_metamodel("textx.tx")

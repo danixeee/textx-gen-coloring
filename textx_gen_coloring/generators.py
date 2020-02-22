@@ -1,9 +1,9 @@
 import re
 import string
-from functools import partial
+from textx import metamodel_for_language, get_children_of_type
 
-from .metamodels import coloring_mm, textx_mm
-from .templates import jinja_env, textmate_template_dir
+from .metamodels import coloring_mm
+from .templates import jinja_env
 
 ASCII_LETTERS = string.ascii_letters
 
@@ -110,38 +110,30 @@ def _parse_syntax_spec(syntax_spec):
 
 def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     """
-    Collects information about grammar using textX object processors. Currently
-    collects only `StrMatch` rules, since those are language keywords.
+    Collects information about grammar using textX object processors.
+    Currently collects only `StrMatch` and `ReMatch` rules, since those are
+    language keywords and identifiers.
     """
-    textx_mm.obj_processors = {}
+    textx_mm = metamodel_for_language('textx')
+    grammar_model = textx_mm.grammar_model_from_file(grammar_file)
     grammar_info = GrammarInfo(lang_name)
 
-    def _str_obj_processor(grammar_info, str_match):
-        """Get language keywords (all strings in language grammar definition)"""
+    for str_match in get_children_of_type('StrMatch', grammar_model):
         keyword = _escape_keyword(str_match.match)
-
         if keyword not in grammar_info.keywords:
             grammar_info.keywords.append(keyword)
 
-    def _regex_obj_processor(grammar_info, reg_match):
-        """Get language regular expressions"""
+    for reg_match in get_children_of_type('ReMatch', grammar_model):
         if _get_textx_rule_name(reg_match.parent) == "Comment":
             grammar_info.comments.append(reg_match.match)
         else:
             grammar_info.regexes.append(reg_match.match)
 
-    proccessors = {}
-    if not skip_keywords:
-        proccessors["StrMatch"] = partial(_str_obj_processor, grammar_info)
-        proccessors["ReMatch"] = partial(_regex_obj_processor, grammar_info)
-
-    textx_mm.register_obj_processors(proccessors)
-    textx_mm.model_from_file(grammar_file)
-
     return grammar_info
 
 
-def generate_textmate_syntax(model, lang_name, syntax_spec=None, skip_keywords=False):
+def generate_textmate_syntax(model, lang_name, syntax_spec=None,
+                             skip_keywords=False):
     """
     Gets textmate generator depending on provided arguments.
     If syntax specification file is not provided, default generator is used
