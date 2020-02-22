@@ -122,7 +122,7 @@ def test_textmate_gen_cli_console_with_coloring(lang, coloring_model_path):
     name = lang["name"]
     grammar_path = lang["grammar_path"]
 
-    _, exc = _textmate_gen_cli(
+    message, exc = _textmate_gen_cli(
         grammar_path, name=name, syntax__spec=coloring_model_path
     )
-    assert isinstance(exc, NotImplementedError)
+    assert 'Not supported yet' in message
