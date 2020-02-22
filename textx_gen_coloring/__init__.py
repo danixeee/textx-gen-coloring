@@ -1,9 +1,8 @@
 import sys
-from functools import partial
-from os.path import dirname, exists, join
+from os.path import exists
 
 import click
-from textx import LanguageDesc, generator, metamodel_from_file
+from textx import LanguageDesc, generator
 
 from .generators import generate_textmate_syntax
 from .metamodels import coloring_mm
