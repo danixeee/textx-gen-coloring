@@ -33,13 +33,11 @@ def textmate_gen(
         click.echo('\nError: Missing option: "--name".')
         sys.exit(1)
 
-    textmate_json = generate_textmate_syntax(model, name, syntax_spec,
-                                             skip_keywords)
+    textmate_json = generate_textmate_syntax(model, name, syntax_spec, skip_keywords)
 
     if output_path:
         if overwrite is False and exists(output_path):
-            click.echo("\nError: File already exists at {}."
-                       .format(output_path))
+            click.echo("\nError: File already exists at {}.".format(output_path))
             sys.exit(1)
 
         with open(output_path, "w") as f:

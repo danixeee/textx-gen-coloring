@@ -114,16 +114,16 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     Currently collects only `StrMatch` and `ReMatch` rules, since those are
     language keywords and identifiers.
     """
-    textx_mm = metamodel_for_language('textx')
+    textx_mm = metamodel_for_language("textx")
     grammar_model = textx_mm.grammar_model_from_file(grammar_file)
     grammar_info = GrammarInfo(lang_name)
 
-    for str_match in get_children_of_type('StrMatch', grammar_model):
+    for str_match in get_children_of_type("StrMatch", grammar_model):
         keyword = _escape_keyword(str_match.match)
         if keyword not in grammar_info.keywords:
             grammar_info.keywords.append(keyword)
 
-    for reg_match in get_children_of_type('ReMatch', grammar_model):
+    for reg_match in get_children_of_type("ReMatch", grammar_model):
         if _get_textx_rule_name(reg_match.parent) == "Comment":
             grammar_info.comments.append(reg_match.match)
         else:
@@ -132,8 +132,7 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     return grammar_info
 
 
-def generate_textmate_syntax(model, lang_name, syntax_spec=None,
-                             skip_keywords=False):
+def generate_textmate_syntax(model, lang_name, syntax_spec=None, skip_keywords=False):
     """
     Gets textmate generator depending on provided arguments.
     If syntax specification file is not provided, default generator is used

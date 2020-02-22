@@ -14,8 +14,7 @@ def _textmate_gen_cli(grammar_path, **kwargs):
     cmd = ["generate", "--target", "textmate", grammar_path]
     for flag, value in kwargs.items():
         flag = (
-            flag.replace("__", "_")
-            if flag.find("__") != -1 else flag.replace("_", "-")
+            flag.replace("__", "_") if flag.find("__") != -1 else flag.replace("_", "-")
         )
         cmd.extend(["--{}".format(flag), value])
 
@@ -32,8 +31,7 @@ def _get_keywords_from_textmate(textmate):
     """Return keywords from textmate object.
     """
     return [
-        kw["match"]
-        for kw in textmate["repository"]["language_keyword"]["patterns"]
+        kw["match"] for kw in textmate["repository"]["language_keyword"]["patterns"]
     ]
 
 
@@ -103,10 +101,8 @@ def test_textmate_gen_cli_file_already_exists(lang, tmpdir):
     name = lang["name"]
     grammar_path = lang["grammar_path"]
 
-    output, _ = _textmate_gen_cli(grammar_path, name=name,
-                                  output_path=str(tmp_file))
-    output, err = _textmate_gen_cli(grammar_path, name=name,
-                                    output_path=str(tmp_file))
+    output, _ = _textmate_gen_cli(grammar_path, name=name, output_path=str(tmp_file))
+    output, err = _textmate_gen_cli(grammar_path, name=name, output_path=str(tmp_file))
     assert "Error: File already exists" in output
     assert err.code != 0
 
@@ -125,4 +121,4 @@ def test_textmate_gen_cli_console_with_coloring(lang, coloring_model_path):
     message, exc = _textmate_gen_cli(
         grammar_path, name=name, syntax__spec=coloring_model_path
     )
-    assert 'Not supported yet' in message
+    assert "Not supported yet" in message
