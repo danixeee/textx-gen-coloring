@@ -5,7 +5,7 @@ from textx import metamodel_for_language, get_children_of_type
 from .metamodels import coloring_mm
 from .templates import jinja_env
 
-ASCII_LETTERS = string.ascii_letters
+IDENT_LETTERS = string.ascii_letters + string.digits + '_'
 
 
 class GrammarInfo:
@@ -81,12 +81,12 @@ class _TextmateDefaultGen(_TextmateGen):
 
 def _escape_keyword(keyword):
     """
-    Prepend `\\\\` to all chars that are not ascii letters.
+    Prepend `\\\\` to all chars that can't be part of keyword identifier.
     NOTE: `re.escape` does not work the same for 3.6 and 3.7 versions.
     """
     return "".join(
         [
-            letter if letter in ASCII_LETTERS else "\\\\{}".format(letter)
+            letter if letter in IDENT_LETTERS else "\\\\{}".format(letter)
             for letter in keyword
         ]
     )
