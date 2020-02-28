@@ -1,4 +1,5 @@
-// https://github.com/textX/textX/blob/master/examples/robot/robot.tx
+import direction
+
 Program:
   'begin'
     commands*=Command
@@ -15,10 +16,6 @@ InitialCommand:
 
 MoveCommand:
   direction=Direction (steps=INT)?
-;
-
-Direction:
-  "up"|"down"|"left"|"right"
 ;
 
 Comment:
