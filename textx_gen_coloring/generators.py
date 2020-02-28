@@ -1,12 +1,13 @@
 import re
 import string
-from os.path import dirname, abspath, join
-from textx import metamodel_for_language, get_children_of_type
+from os.path import abspath, dirname, join
+
+from textx import get_children_of_type, metamodel_for_language
 
 from .metamodels import coloring_mm
 from .templates import jinja_env
 
-IDENT_LETTERS = string.ascii_letters + string.digits + '_'
+IDENT_LETTERS = string.ascii_letters + string.digits + "_"
 
 
 class GrammarInfo:
@@ -128,17 +129,19 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
             grammar_models[grammar_model_filename] = grammar_model
             for imp in grammar_model.imports_or_references:
                 if hasattr(imp, "grammar_to_import"):
-                    new_file = "{}.tx".format(join(dirname(grammar_model_filename),
-                                                   imp.grammar_to_import))
+                    new_file = "{}.tx".format(
+                        join(dirname(grammar_model_filename), imp.grammar_to_import)
+                    )
                     _load_imports(textx_mm.grammar_model_from_file(new_file))
 
     _load_imports(grammar_model)
 
     for grammar_model in grammar_models.values():
-        for str_match in get_children_of_type("StrMatch", grammar_model):
-            keyword = _escape_keyword(str_match.match)
-            if keyword not in grammar_info.keywords:
-                grammar_info.keywords.append(keyword)
+        if skip_keywords is False:
+            for str_match in get_children_of_type("StrMatch", grammar_model):
+                keyword = _escape_keyword(str_match.match)
+                if keyword not in grammar_info.keywords:
+                    grammar_info.keywords.append(keyword)
 
         for reg_match in get_children_of_type("ReMatch", grammar_model):
             if _get_textx_rule_name(reg_match.parent) == "Comment":
