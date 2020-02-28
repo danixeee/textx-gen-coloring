@@ -1,5 +1,6 @@
 import re
 import string
+from os.path import dirname, abspath, join
 from textx import metamodel_for_language, get_children_of_type
 
 from .metamodels import coloring_mm
@@ -118,16 +119,32 @@ def _parse_grammar(grammar_file, lang_name, skip_keywords=False):
     grammar_model = textx_mm.grammar_model_from_file(grammar_file)
     grammar_info = GrammarInfo(lang_name)
 
-    for str_match in get_children_of_type("StrMatch", grammar_model):
-        keyword = _escape_keyword(str_match.match)
-        if keyword not in grammar_info.keywords:
-            grammar_info.keywords.append(keyword)
+    # Collect all imported grammar models
+    grammar_models = {}
 
-    for reg_match in get_children_of_type("ReMatch", grammar_model):
-        if _get_textx_rule_name(reg_match.parent) == "Comment":
-            grammar_info.comments.append(reg_match.match)
-        else:
-            grammar_info.regexes.append(reg_match.match)
+    def _load_imports(grammar_model):
+        grammar_model_filename = abspath(grammar_model._tx_filename)
+        if grammar_model_filename not in grammar_models:
+            grammar_models[grammar_model_filename] = grammar_model
+            for imp in grammar_model.imports_or_references:
+                if hasattr(imp, "grammar_to_import"):
+                    new_file = "{}.tx".format(join(dirname(grammar_model_filename),
+                                                   imp.grammar_to_import))
+                    _load_imports(textx_mm.grammar_model_from_file(new_file))
+
+    _load_imports(grammar_model)
+
+    for grammar_model in grammar_models.values():
+        for str_match in get_children_of_type("StrMatch", grammar_model):
+            keyword = _escape_keyword(str_match.match)
+            if keyword not in grammar_info.keywords:
+                grammar_info.keywords.append(keyword)
+
+        for reg_match in get_children_of_type("ReMatch", grammar_model):
+            if _get_textx_rule_name(reg_match.parent) == "Comment":
+                grammar_info.comments.append(reg_match.match)
+            else:
+                grammar_info.regexes.append(reg_match.match)
 
     return grammar_info
 
